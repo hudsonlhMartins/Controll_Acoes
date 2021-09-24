@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1 class="text-center">Negociações</h1>
+
+    <div id="messagemView"></div>
+
+    <form class="form" onsubmit="NegociacaoControle.adicionar(event)">
+        <div class="form-group">
+            <label for="data">Data</label>
+            <input type="date" id="data" class="form-control" required autofocus>
+        </div>
+        <div class="form-group">
+            <label for="quantidade">Quantidade</label>
+            <input type="number" min="1" step="1" id="quantidade" class="form-control" value="1"  >
+        </div>
+        <div class="form-group">
+            <label for="valor">Valor</label>
+            <input type="number" id="valor" class="form-control" min="0.01" step="0.01" value="0.0">
+        </div>
+        <button class="btn btn-primary" id="btn-incluir" type="submit">Incluir</button>
+    </form>
+
+    <div class="text-center">
+        <button class="btn btn-primary text-center" type="button">Importa Negociações</button>
+        <button onclick="NegociacaoControle.apagar()" class="btn btn-primary text-center" type="button">Apagar</button>
+    </div>
+    <br>
+    <br>
+    
+    <div id="negociacoes_viwes"></div>
+
+    <script src="./js/app/models/Negociacao.js"></script>
+    <script src="./js/app/controllers/NegociacaoControllrs.js"></script>
+    <script src="./js/app/helpers/DateHelper.js"></script>
+    <script src="./js/app/models/ListaNegociacoes.js"></script>
+    <script src="./js/app/views/View.js"></script>
+    <script src="./js/app/views/NegociacoesViews.js"></script>
+    <script src="./js/app/models/Mensagem.js"></script>
+    <script src="./js/app/views/MensagemView.js"></script>
+    
+
+
+
+
+    <script>
+        let NegociacaoControle = new NegociacaoControllers()
+        // a class NegociacaoControllers vai se chamada logo que a pagina carregar__
+        // pos ela foi instaciado, quando vc instacia uma class msm logando ela em um let__
+        // ela e chamada instaciada.
+        // todo os elemento do constructor vai ser chamado iniciado.
+    </script>
+</body>
+</html>
