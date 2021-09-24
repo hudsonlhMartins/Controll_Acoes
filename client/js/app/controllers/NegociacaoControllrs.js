@@ -4,10 +4,35 @@ class NegociacaoControllers{
          this._inputDate = $('#data')
          this._inputQuantidade = $('#quantidade')
          this._inputValor = $('#valor')
+        let self = this
+         this._listaNegocicoes = new Proxy(new ListaNegociacao(), {
+            get(target, prop, receiver){
+                if(['adicionar', 'esvazia'].includes(prop) && typeof([prop])== typeof(Function)){
+                    // includes e para ve se esse nome tem dentro do array prop
 
-         this._listaNegocicoes = new ListaNegociacao(model=>
-            this._NegociacoesView._update(model)
-           )
+                // esse rturn vai subtituir no proxy não
+                    return function(){
+            // quando da um return sig que o method do object original vai ser__
+            // trocar para oq esta aqui nesse return
+                    console.log(`foi ${prop}`)
+                    Reflect.apply(target[prop], target, arguments)
+                    self._NegociacoesView._update(target)
+
+                    // target[prop la do meu objecto original]
+                    // target -> o this dele vai ser ele msm
+                    // arguments -> são os valores que ele vai receber. __
+                    // arg e uma var imprisita que me todos os parametro da function quando ela e chamada
+                    // então ela vai trazer todos os parametro da class.
+                    }
+                }
+                    return Reflect.get(target, prop, receiver)
+                
+            }
+        })
+
+         //this._listaNegocicoes = new ListaNegociacao(model=>
+           // this._NegociacoesView._update(model)
+           //)
 
          this._NegociacoesView = new NegociacoesView($('#negociacoes_viwes'))
          this._NegociacoesView._update(this._listaNegocicoes)
