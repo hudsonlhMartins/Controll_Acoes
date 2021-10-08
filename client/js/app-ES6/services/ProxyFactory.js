@@ -1,0 +1,38 @@
+import {Bind} from '../helpers/Bind'
+
+
+
+export class ProxyFactory{
+    static create(object, props, acao){
+        
+        return new Proxy(object, {
+            get(target, prop, receiver){
+                
+                if(props.includes(prop) && ProxyFactory._ehFunction(target[prop])){
+                    // esse return de baixo que dizer se passa nessa verifivacao vai podifica__
+                    // o methods 
+                    return function(){
+                        console.log(`foi  a propriedade chamada: ${prop}`)
+                        let retorno = Reflect.apply(target[prop], target, arguments)
+                        acao(target)
+                        return retorno
+                    }
+                }
+                    return Reflect.get(target, prop, receiver)
+                
+            },
+            set(target, prop, value, receiver){
+                let retorno = Reflect.set(target, prop, value, receiver)
+                if(props.includes(prop)){
+                    acao(target)
+                }
+                return retorno
+            }
+        })
+    }
+    static _ehFunction(func){
+        return typeof(func) == typeof(Function)
+    }
+    
+
+}

@@ -1,86 +1,172 @@
-class NegociacaoControllers{
-    constructor(){
-         let $ = document.querySelector.bind(document)
-         this._inputDate = $('#data')
-         this._inputQuantidade = $('#quantidade')
-         this._inputValor = $('#valor')
-        let self = this
-         this._listaNegocicoes = new Proxy(new ListaNegociacao(), {
-            get(target, prop, receiver){
-                if(['adicionar', 'esvazia'].includes(prop) && typeof([prop])== typeof(Function)){
-                    // includes e para ve se esse nome tem dentro do array prop
+'use strict';
 
-                // esse rturn vai subtituir no proxy não
-                    return function(){
-            // quando da um return sig que o method do object original vai ser__
-            // trocar para oq esta aqui nesse return
-                    console.log(`foi ${prop}`)
-                    Reflect.apply(target[prop], target, arguments)
-                    self._NegociacoesView._update(target)
+System.register(['../models/Mensagem', '../models/ListaNegociacoes', '../models/Negociacao', '../services/connectionFactory', '../helpers/Bind', '../helpers/DateHelper', '../services/negociacaoServer', '../views/NegociacoesViews', '../views/MensagemView', '../dao/NegociacaoDao'], function (_export, _context) {
+    "use strict";
 
-                    // target[prop la do meu objecto original]
-                    // target -> o this dele vai ser ele msm
-                    // arguments -> são os valores que ele vai receber. __
-                    // arg e uma var imprisita que me todos os parametro da function quando ela e chamada
-                    // então ela vai trazer todos os parametro da class.
+    var Mensagem, ListaNegociacao, Negociacao, ConnectionFactory, Bind, DateHelper, negociacaoServer, NegociacoesView, MensagemView, negociacaoDao, _createClass, NegociacaoControllers;
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    return {
+        setters: [function (_modelsMensagem) {
+            Mensagem = _modelsMensagem.Mensagem;
+        }, function (_modelsListaNegociacoes) {
+            ListaNegociacao = _modelsListaNegociacoes.ListaNegociacao;
+        }, function (_modelsNegociacao) {
+            Negociacao = _modelsNegociacao.Negociacao;
+        }, function (_servicesConnectionFactory) {
+            ConnectionFactory = _servicesConnectionFactory.ConnectionFactory;
+        }, function (_helpersBind) {
+            Bind = _helpersBind.Bind;
+        }, function (_helpersDateHelper) {
+            DateHelper = _helpersDateHelper.DateHelper;
+        }, function (_servicesNegociacaoServer) {
+            negociacaoServer = _servicesNegociacaoServer.negociacaoServer;
+        }, function (_viewsNegociacoesViews) {
+            NegociacoesView = _viewsNegociacoesViews.NegociacoesView;
+        }, function (_viewsMensagemView) {
+            MensagemView = _viewsMensagemView.MensagemView;
+        }, function (_daoNegociacaoDao) {
+            negociacaoDao = _daoNegociacaoDao.negociacaoDao;
+        }],
+        execute: function () {
+            _createClass = function () {
+                function defineProperties(target, props) {
+                    for (var i = 0; i < props.length; i++) {
+                        var descriptor = props[i];
+                        descriptor.enumerable = descriptor.enumerable || false;
+                        descriptor.configurable = true;
+                        if ("value" in descriptor) descriptor.writable = true;
+                        Object.defineProperty(target, descriptor.key, descriptor);
                     }
                 }
-                    return Reflect.get(target, prop, receiver)
-                
-            }
-        })
 
-         //this._listaNegocicoes = new ListaNegociacao(model=>
-           // this._NegociacoesView._update(model)
-           //)
+                return function (Constructor, protoProps, staticProps) {
+                    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+                    if (staticProps) defineProperties(Constructor, staticProps);
+                    return Constructor;
+                };
+            }();
 
-         this._NegociacoesView = new NegociacoesView($('#negociacoes_viwes'))
-         this._NegociacoesView._update(this._listaNegocicoes)
+            _export('NegociacaoControllers', NegociacaoControllers = function () {
+                function NegociacaoControllers() {
+                    var _this = this;
 
-         // passando o array que esta em listaNegociacao
-        
-         this._messangem = new Mensagem()
-         this._messagemView = new MensagemView($('#messagemView'))
-         this._messagemView._update(this._messangem)
-    }
-    adicionar(event){
-        event.preventDefault()
-    
-        this._listaNegocicoes.adicionar(this._criarNegociacao())
-        // não precisa chamar o  updtade pos ja instaciamos ele com a class. 
-        this._NegociacoesView._update(this._listaNegocicoes)
-        this._limpaFormulario()
-        
-        this._messangem.texto = 'Item adicionado com sucesso'
-        this._messagemView._update(this._messangem)
+                    _classCallCheck(this, NegociacaoControllers);
 
-        console.log(this._listaNegocicoes.negociacoes)
-        // essa .negociacoes e um method da class ListaNegocicao que e so para read
+                    var $ = document.querySelector.bind(document);
+                    this._inputDate = $('#data');
+                    this._inputQuantidade = $('#quantidade');
+                    this._inputValor = $('#valor');
 
-    }
+                    this._listaNegocicoes = new Bind(new ListaNegociacao(), new NegociacoesView($('#negociacoes_viwes')), 'adicionar', 'esvazia');
 
-    apagar(){
-        this._listaNegocicoes.esvazia()
-        this._NegociacoesView._update(this._listaNegocicoes)
+                    this._messangem = new Bind(new Mensagem(), new MensagemView($('#messagemView')), 'texto');
 
-        this._messangem.texto ='Lista apagada'
-        this._messagemView._update(this._messangem)
-        
-    }
+                    ConnectionFactory.getConeection().then(function (connection) {
+                        return new negociacaoDao(connection);
+                    }).then(function (dao) {
+                        return dao.listaTodos();
+                    }).then(function (negociacoes) {
+                        negociacoes.forEach(function (negociacao) {
+                            _this._listaNegocicoes.adicionar(negociacao);
+                        });
+                    }).catch(function (erro) {
+                        console.log(erro);
+                        _this._messangem.texto = erro;
+                    });
+                }
 
-    _criarNegociacao(){
-        return new Negociacao(
-            DateHelper.stringToDate(this._inputDate.value),
-            this._inputQuantidade.value,
-            this._inputValor.value
-        ) 
-    }
+                _createClass(NegociacaoControllers, [{
+                    key: 'adicionar',
+                    value: function adicionar(event) {
+                        var _this2 = this;
 
-    _limpaFormulario(){
-        this._inputDate.value = ''
-        this._inputQuantidade.value = 1
-        this._inputValor.value = 0.0
+                        event.preventDefault();
 
-        this._inputDate.focus()
-    }
-}
+                        ConnectionFactory.getConeection().then(function (conection) {
+                            var negociacao = _this2._criarNegociacao();
+                            new negociacaoDao(conection).adicionar(negociacao).then(function () {
+                                _this2._listaNegocicoes.adicionar(negociacao);
+                                _this2._limpaFormulario();
+                                _this2._messangem.texto = 'Item adicionado com sucesso';
+                            });
+                        }).catch(function (erro) {
+                            return _this2._messangem.texto = erro;
+                        });
+                    }
+                }, {
+                    key: 'importaNegociacaoes',
+                    value: function importaNegociacaoes() {
+                        var _this3 = this;
+
+                        var server = new negociacaoServer();
+
+                        server.obtemNegociacaodaSemana().then(function (negociacoes) {
+                            return negociacoes.filter(function (negocicao) {
+                                return !_this3._listaNegocicoes.negociacoes.some(function (negociacaoExistente) {
+                                    return JSON.stringify(negocicao) == JSON.stringify(negociacaoExistente);
+                                });
+                            });
+                        });
+
+                        Promise.all([server.obtemNegociacaodaSemana(), server.obtemNegociacaodaSemanaAnterior(), server.obtemNegociacaodaSemanaRetrasada()]).then(function (negociacoes) {
+                            console.log(negociacoes);
+                            // esse negociacoes vai vim um array dentro dele tem 3 array com negocicoes
+                            // por isso usando o reduce para colocar esse 3 array em um só
+                            negociacoes.reduce(function (arrayAchatado, array) {
+                                return arrayAchatado.concat(array);
+                            }, []
+                            // array em branco e como o primeiro parametro vai comecar__
+                            // segundo parametro e o array que estamos varrendo
+                            ).forEach(function (negociacao) {
+                                return _this3._listaNegocicoes.adicionar(negociacao);
+                            });
+                        }).catch(function (erro) {
+                            return _this3._messangem.texto = erro;
+                        });
+                    }
+                }, {
+                    key: 'apagar',
+                    value: function apagar() {
+                        var _this4 = this;
+
+                        ConnectionFactory.getConeection().then(function (connection) {
+                            return new negociacaoDao(connection);
+                        }).then(function (dao) {
+                            return dao.apagatodas();
+                        }).then(function (mensagem) {
+                            _this4._messangem.texto = mensagem;
+                            _this4._listaNegocicoes.esvazia();
+                        }).catch(function (erro) {
+                            console.log(erro);
+                        });
+                    }
+                }, {
+                    key: '_criarNegociacao',
+                    value: function _criarNegociacao() {
+                        return new Negociacao(DateHelper.stringToDate(this._inputDate.value), parseInt(this._inputQuantidade.value), parseFloat(this._inputValor.value));
+                    }
+                }, {
+                    key: '_limpaFormulario',
+                    value: function _limpaFormulario() {
+                        this._inputDate.value = '';
+                        this._inputQuantidade.value = 1;
+                        this._inputValor.value = 0.0;
+
+                        this._inputDate.focus();
+                    }
+                }]);
+
+                return NegociacaoControllers;
+            }());
+
+            _export('NegociacaoControllers', NegociacaoControllers);
+        }
+    };
+});
+//# sourceMappingURL=NegociacaoControllrs.js.map

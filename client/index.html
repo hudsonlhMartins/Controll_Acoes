@@ -13,7 +13,7 @@
 
     <div id="messagemView"></div>
 
-    <form class="form" onsubmit="NegociacaoControle.adicionar(event)">
+    <form class="form">
         <div class="form-group">
             <label for="data">Data</label>
             <input type="date" id="data" class="form-control" required autofocus>
@@ -30,33 +30,26 @@
     </form>
 
     <div class="text-center">
-        <button class="btn btn-primary text-center" type="button">Importa Negociações</button>
-        <button onclick="NegociacaoControle.apagar()" class="btn btn-primary text-center" type="button">Apagar</button>
+        <button onclick="NegociacaoControle.importaNegociacaoes()" class="btn btn-primary text-center" type="import">Importa Negociações</button>
+        <button id="apagar_btn" class="btn btn-primary text-center" type="button">Apagar</button>
     </div>
     <br>
     <br>
     
     <div id="negociacoes_viwes"></div>
 
-    <script src="./js/app/models/Negociacao.js"></script>
-    <script src="./js/app/controllers/NegociacaoControllrs.js"></script>
-    <script src="./js/app/helpers/DateHelper.js"></script>
-    <script src="./js/app/models/ListaNegociacoes.js"></script>
-    <script src="./js/app/views/View.js"></script>
-    <script src="./js/app/views/NegociacoesViews.js"></script>
-    <script src="./js/app/models/Mensagem.js"></script>
-    <script src="./js/app/views/MensagemView.js"></script>
-    
 
-
+    <script src="./node_modules/systemjs/dist/system.js"></script>
+    <script>
+        System.defaultJSExtensions = true;
+        System.import('./js/app/boot').catch(function(err){
+            console.error(err)
+        })
+    </script>
 
 
     <script>
-        let NegociacaoControle = new NegociacaoControllers()
-        // a class NegociacaoControllers vai se chamada logo que a pagina carregar__
-        // pos ela foi instaciado, quando vc instacia uma class msm logando ela em um let__
-        // ela e chamada instaciada.
-        // todo os elemento do constructor vai ser chamado iniciado.
+// tem que da um jeito de instacia a class negociacaoController pq ele a chamada no form
     </script>
 </body>
 </html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendendo indexDb</title>
+</head>
+<body>
+    <script src="./js/app/models/Negociacao.js"></script>
+    <script>
+        var connection
+
+        var openRequest = window.indexedDB.open('aluraframe', 3)
+        openRequest.onupgradeneeded = e=>{
+            console.log('criar ou altear um banco ja existente')
+            let minhaConnection = e.target.result
+            // a objectStore criada tem que ter um id ou ser autoNumerada
+            if(minhaConnection.objectStoreNames.contains('negociacoes')){
+                // se objectStoresNamess conter um object com nome negociacoes
+                minhaConnection.deleteObjectStore('negociacoes')
+
+            }
+            // para colocar objectStore com autoIncremet
+            minhaConnection.createObjectStore('negociacoes', {autoIncrement: true})
+        }
+        openRequest.onsuccess =e=>{
+            console.log('conexão obtida com sucesso')
+            connection = e.target.result
+        }
+
+        openRequest.onerror = e=>{
+            console.log(e.target.error)
+        }
+        // para adicioar um instacia no indexDb
+        function adiciona(){
+            // para abrir um trasação, e passa transacao para qual object, passa entrer []
+            // 2° qual e o tipo de trasacao
+            let transaction = connection.transaction(['negociacoes'], 'readwrite')
+            // com essa transaction queremos uma Store transacional
+            let store =  transaction.objectStore('negociacoes')
+            // com a transaction de negociacao me da o store de negociacoes
+            // com store agr conseguirmos fazer operaçoes de persistencia, grava, escreve...
+            let negociaco = new Negociacao(new Date(), 1, 200)
+            let request = store.add(negociaco) 
+            // para adicionar negociacao na stote, so que ele ainda não grava__
+            // ele da um request que return se gravou ou deu erro
+            request.onsuccess = e=>{
+                console.log('gravou com sucesso')
+            }
+            request.onerror = e=>{
+                console.log('teve um erro na gravação')
+            }
+        }
+        function listaTodo(){
+            let transaction = connection.transaction(['negociacoes'], 'readwrite')
+            let store =  transaction.objectStore('negociacoes')
+
+            // para caminha para cada objectStore, ele me da o ponteiro para o primeiro object, segundo..
+            let cursor = store.openCursor()
+            let negociacoes = []
+            cursor.onsuccess = e=>{
+
+                // esse e.target.result e um ponteiro para o item que esta no objectStore
+                let atual = e.target.result
+                if (atual){
+                    let dado = atual.value
+                    negociacoes.push(new Negociacao(dado._date, dado._quantidade, dado._valor))
+
+                    atual.continue()
+                }else{
+                    console.log(negociacoes)
+                }
+            }
+            cursor.onerror = e=>{
+                console.log(e.target.error.name)
+            }
+        }
+    </script>
+</body>
+</html>
